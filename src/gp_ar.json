@@ -1,0 +1,70 @@
+{
+ "viewport": {
+  "w": 390,
+  "h": 844
+ },
+ "video": {
+  "w": 780,
+  "h": 1688,
+  "fps": 30
+ },
+ "trimStart": 7.02,
+ "events": [
+  {
+   "type": "tap",
+   "t": 0.2,
+   "x": 150,
+   "y": 730,
+   "label": "play card"
+  },
+  {
+   "type": "tap",
+   "t": 1.4,
+   "x": 200,
+   "y": 730,
+   "label": "play card"
+  },
+  {
+   "type": "tap",
+   "t": 2.43,
+   "x": 90,
+   "y": 808,
+   "label": "play all"
+  },
+  {
+   "type": "tap",
+   "t": 3.63,
+   "x": 145,
+   "y": 205,
+   "label": "buy card"
+  },
+  {
+   "type": "tap",
+   "t": 4.95,
+   "x": 200,
+   "y": 205,
+   "label": "buy card"
+  },
+  {
+   "type": "tap",
+   "t": 6.23,
+   "x": 230,
+   "y": 470,
+   "label": "march from"
+  },
+  {
+   "type": "tap",
+   "t": 7.36,
+   "x": 140,
+   "y": 395,
+   "label": "march to"
+  },
+  {
+   "type": "tap",
+   "t": 8.63,
+   "x": 270,
+   "y": 808,
+   "label": "end turn"
+  }
+ ]
+}

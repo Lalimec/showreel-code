@@ -1,0 +1,119 @@
+{
+ "viewport": {
+  "w": 390,
+  "h": 844
+ },
+ "video": {
+  "w": 780,
+  "h": 1688,
+  "fps": 30
+ },
+ "trimStart": 19.49,
+ "events": [
+  {
+   "type": "tap",
+   "t": 0.71,
+   "x": 100,
+   "y": 422,
+   "label": "hex"
+  },
+  {
+   "type": "tap",
+   "t": 1.39,
+   "x": 100,
+   "y": 422,
+   "label": "turn tile"
+  },
+  {
+   "type": "tap",
+   "t": 2.06,
+   "x": 316,
+   "y": 805,
+   "label": "lay tile"
+  },
+  {
+   "type": "tap",
+   "t": 3.24,
+   "x": 140,
+   "y": 446,
+   "label": "hex"
+  },
+  {
+   "type": "tap",
+   "t": 3.89,
+   "x": 140,
+   "y": 446,
+   "label": "turn tile"
+  },
+  {
+   "type": "tap",
+   "t": 4.57,
+   "x": 316,
+   "y": 805,
+   "label": "lay tile"
+  },
+  {
+   "type": "tap",
+   "t": 5.75,
+   "x": 180,
+   "y": 469,
+   "label": "hex"
+  },
+  {
+   "type": "tap",
+   "t": 6.42,
+   "x": 180,
+   "y": 469,
+   "label": "turn tile"
+  },
+  {
+   "type": "tap",
+   "t": 7.05,
+   "x": 180,
+   "y": 469,
+   "label": "turn tile"
+  },
+  {
+   "type": "tap",
+   "t": 7.74,
+   "x": 219,
+   "y": 805,
+   "label": "cancel"
+  },
+  {
+   "type": "tap",
+   "t": 8.55,
+   "x": 180,
+   "y": 469,
+   "label": "hex again"
+  },
+  {
+   "type": "tap",
+   "t": 9.22,
+   "x": 316,
+   "y": 805,
+   "label": "lay tile"
+  },
+  {
+   "type": "tap",
+   "t": 10.42,
+   "x": 220,
+   "y": 446,
+   "label": "hex"
+  },
+  {
+   "type": "tap",
+   "t": 11.09,
+   "x": 220,
+   "y": 446,
+   "label": "turn tile"
+  },
+  {
+   "type": "tap",
+   "t": 11.73,
+   "x": 316,
+   "y": 805,
+   "label": "lay tile"
+  }
+ ]
+}

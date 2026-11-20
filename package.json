@@ -1,0 +1,21 @@
+{
+  "name": "showreel-code",
+  "private": true,
+  "version": "15.0.0",
+  "description": "Remotion source of my 2026 showreel: an edit driven by music event data.",
+  "scripts": {
+    "studio": "remotion studio src/index.js",
+    "render": "remotion render src/index.js ReelV15 out/reel.mp4",
+    "render:vertical": "remotion render src/index.js ReelV15V out/reel_vertical.mp4",
+    "stills": "node stills.mjs"
+  },
+  "dependencies": {
+    "@remotion/bundler": "^4.0.300",
+    "@remotion/cli": "^4.0.300",
+    "@remotion/google-fonts": "^4.0.300",
+    "@remotion/renderer": "^4.0.300",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.300"
+  }
+}

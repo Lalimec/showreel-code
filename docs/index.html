@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Showreel 2026: the edit as data</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#EFEAE0;--ink:#151413;--orange:#FF4A1C;--blue:#2B50FF;--sand:#D9D0BF;--mute:#6E675C}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 15px/1.5 "DM Mono",Consolas,monospace}
+.wrap{max-width:1240px;margin:0 auto;padding:36px max(20px,env(safe-area-inset-left)) 60px}
+h1{font:800 clamp(40px,7vw,92px)/.9 "Bricolage Grotesque",sans-serif;font-stretch:84%;letter-spacing:-.035em;margin:0}
+h1 em{font-style:normal;color:var(--orange)}
+.lede{max-width:62ch;margin:18px 0 26px;font-size:15px}
+.lede a{color:var(--ink)}
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;align-items:start}
+video{width:100%;display:block;background:#000;aspect-ratio:16/9}
+.note{font-size:12px;color:var(--mute);margin-top:8px}
+.side{display:flex;flex-direction:column;gap:14px}
+.now{background:var(--ink);color:var(--paper);padding:16px 18px}
+.now small{display:block;font-size:12px;color:#B9B0A0;letter-spacing:.06em;text-transform:uppercase}
+.now b{display:block;font:800 30px/1 "Bricolage Grotesque",sans-serif;font-stretch:86%;margin-top:6px}
+.now span{display:block;margin-top:8px;font-size:13px;color:#B9B0A0}
+.layers{display:grid;gap:8px}
+.layer{display:grid;grid-template-columns:70px 1fr 54px;align-items:center;gap:10px;font-size:13px}
+.bar{height:14px;background:#fff;position:relative;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;width:0;background:var(--c)}
+.layer em{font-style:normal;text-align:right;color:var(--mute);font-variant-numeric:tabular-nums}
+.tl{margin-top:24px;background:#fff;padding:14px 14px 8px;cursor:pointer;user-select:none;overflow-x:auto}
+.tl svg{display:block;min-width:900px;width:100%;height:auto}
+h2{font:800 34px/1 "Bricolage Grotesque",sans-serif;font-stretch:86%;letter-spacing:-.02em;margin:46px 0 14px}
+.chapters{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px}
+.chapters button{all:unset;cursor:pointer;display:flex;gap:10px;padding:10px 12px;background:#fff;font-size:13px}
+.chapters button b{color:var(--mute);font-weight:400;font-variant-numeric:tabular-nums}
+.chapters button.on{background:var(--orange);color:#fff}.chapters button.on b{color:#fff}
+.chapters button:focus-visible{outline:2px solid var(--blue)}
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:6px}
+.how div{border-top:3px solid var(--ink);padding-top:10px}
+.how b{font:800 20px "Bricolage Grotesque",sans-serif;font-stretch:90%}
+footer{margin-top:50px;font-size:13px;color:var(--mute)}
+footer a{color:var(--ink)}
+@media (max-width:860px){.stage{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Showreel 2026,<br><em>edited by the music.</em></h1>
+  <p class="lede">A 70-second reel written in Remotion. No cut in it is keyframed by hand. Every scene starts and ends on a cue in the music edit, and every pulse, zoom and step reads a hit detected in the track. Play it and watch the data underneath move with it. Source: <a href="https://github.com/Lalimec/showreel-code">github.com/Lalimec/showreel-code</a></p>
+
+  <div class="stage">
+    <div>
+      <video id="v" src="reel.mp4" controls playsinline preload="metadata"></video>
+      <p class="note">Muted on purpose: the track isn't licensed for publishing. The cuts still follow it exactly.</p>
+    </div>
+    <div class="side">
+      <div class="now"><small id="sn">Scene 01 / 20</small><b id="sname">Cemil</b><span id="ssec">before the drop</span></div>
+      <div class="layers" id="layers"></div>
+      <div class="note">Each bar is the reel's own <code>decay()</code> pulse: it jumps to full on a hit and falls off, the same value that drives zooms, scale and font width in the code.</div>
+    </div>
+  </div>
+
+  <div class="tl" id="tl" title="Click to jump"><svg id="svg" viewBox="0 0 1600 470"></svg></div>
+
+  <h2>Scenes</h2>
+  <div class="chapters" id="ch"></div>
+
+  <h2>How it's built</h2>
+  <div class="how">
+    <div><b>Cue sheet</b><p>The music edit and its sections: drop, stutters, bell run, bursts, riser, fast run, sweep. Scene boundaries are cues, so re-cutting the music re-times the reel.</p></div>
+    <div><b>Hits per instrument</b><p>Kick, snare, hat, melody and bass onsets, detected per frequency band on Demucs stems cut with the same edit.</p></div>
+    <div><b>Hand-tapped accents</b><p>The big moments I tapped while listening, minus reaction time, snapped to the nearest kick.</p></div>
+    <div><b>Recorded play</b><p>Game ads replay real sessions recorded with Playwright: every tap and drag with its time and position.</p></div>
+  </div>
+  <footer>Rendered with <code>npx remotion render src/index.js ReelV15</code>. Code: <a href="https://github.com/Lalimec/showreel-code">Lalimec/showreel-code</a> · <a href="https://cemil.al">cemil.al</a></footer>
+</div>
+
+<script>
+const LAY = [['kick', 'Kick', '#FF4A1C'], ['snare', 'Snare', '#151413'], ['hat', 'Hat', '#6E675C'], ['melody', 'Melody', '#2B50FF'], ['bass', 'Bass', '#151413']];
+const COLS = ['#FF4A1C', '#2B50FF', '#151413', '#D9D0BF'];
+const v = document.getElementById('v'), svg = document.getElementById('svg');
+const X0 = 110, X1 = 1580, NS = 'http://www.w3.org/2000/svg';
+const el = (n, a, p = svg) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); p.appendChild(e); return e; };
+Promise.all(['data/scenes.json', 'data/events_v7.json'].map((u) => fetch(u).then((r) => r.json()))).then(([S, E]) => {
+  const T = S.total, x = (t) => X0 + (X1 - X0) * t / T;
+  // scenes
+  S.scenes.forEach((s, i) => {
+    const c = COLS[i % 4], fg = c === '#D9D0BF' ? '#151413' : '#EFEAE0', w = x(s.b) - x(s.a);
+    el('rect', {x: x(s.a), y: 10, width: Math.max(1, w - 2), height: 54, fill: c});
+    if (w > 26) { const t = el('text', {x: x(s.a) + 5, y: 30, fill: fg, 'font-size': 14, 'font-family': 'DM Mono'}); t.textContent = String(i + 1).padStart(2, '0'); }
+  });
+  const lab = (y, s) => { const t = el('text', {x: 6, y, 'font-size': 17, 'font-weight': 800, 'font-family': 'Bricolage Grotesque'}); t.textContent = s; };
+  lab(44, 'Scenes');
+  // sections
+  S.sections.forEach((s) => el('line', {x1: x(s.t), x2: x(s.t), y1: 78, y2: 96, stroke: '#151413', 'stroke-width': 2}));
+  S.inserted.forEach(([a, b]) => el('rect', {x: x(a), y: 100, width: x(b) - x(a), height: 6, fill: '#2B50FF'}));
+  lab(98, 'Sections');
+  // hits
+  LAY.forEach(([k, name, c], r) => {
+    const y = 130 + r * 52;
+    el('line', {x1: X0, x2: X1, y1: y + 14, y2: y + 14, stroke: '#E4DED2'});
+    E[k].forEach((t) => el('line', {x1: x(t), x2: x(t), y1: y, y2: y + 28, stroke: c, 'stroke-width': 1.4}));
+    lab(y + 20, name);
+  });
+  const ty = 130 + 5 * 52;
+  S.taps.forEach((t) => el('circle', {cx: x(t), cy: ty + 14, r: 5, fill: '#FF4A1C'}));
+  lab(ty + 20, 'Tapped');
+  for (let s = 0; s <= T; s += 5) { const t = el('text', {x: x(s) - 6, y: 462, 'font-size': 12, fill: '#6E675C', 'font-family': 'DM Mono'}); t.textContent = s + 's'; }
+  const head = el('line', {x1: X0, x2: X0, y1: 4, y2: 446, stroke: '#FF4A1C', 'stroke-width': 3});
+
+  // side panel
+  const L = document.getElementById('layers');
+  const bars = LAY.map(([k, name, c]) => {
+    const row = document.createElement('div'); row.className = 'layer';
+    row.innerHTML = `<span>${name}</span><div class="bar" style="--c:${c}"><i></i></div><em>0</em>`;
+    L.appendChild(row); return {k, i: row.querySelector('i'), n: row.querySelector('em')};
+  });
+  // chapters
+  const CH = document.getElementById('ch');
+  const btns = S.scenes.map((s, i) => {
+    const b = document.createElement('button');
+    b.innerHTML = `<b>${s.a.toFixed(1).padStart(4, '0')}</b><span>${String(i + 1).padStart(2, '0')} ${s.name}</span>`;
+    b.onclick = () => { v.currentTime = s.a + 0.01; v.play(); };
+    CH.appendChild(b); return b;
+  });
+  const decay = (hits, t, k = 9) => { let l = -99; for (const h of hits) { if (h <= t + 1e-4) l = h; else break; } return l < -9 ? 0 : Math.exp(-(t - l) * k); };
+  const count = (hits, t) => { let n = 0; for (const h of hits) { if (h <= t) n++; else break; } return n; };
+  let last = -1;
+  const tick = () => {
+    const t = v.currentTime;
+    head.setAttribute('x1', x(t)); head.setAttribute('x2', x(t));
+    bars.forEach((b) => { b.i.style.width = (100 * decay(E[b.k], t)) + '%'; b.n.textContent = count(E[b.k], t); });
+    const si = Math.max(0, S.scenes.findIndex((s) => t >= s.a && t < s.b));
+    if (si !== last) {
+      last = si; const s = S.scenes[si];
+      document.getElementById('sn').textContent = `Scene ${String(si + 1).padStart(2, '0')} / 20 · ${s.a.toFixed(2)}–${s.b.toFixed(2)} s`;
+      document.getElementById('sname').textContent = s.name;
+      btns.forEach((b, j) => b.classList.toggle('on', j === si));
+    }
+    const sec = S.sections.filter((s) => s.t <= t).pop();
+    document.getElementById('ssec').textContent = sec ? `section: ${sec.name} (${sec.t.toFixed(2)} s)` : 'before the drop';
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+  document.getElementById('tl').addEventListener('click', (e) => {
+    const r = svg.getBoundingClientRect(), px = (e.clientX - r.left) * 1600 / r.width;
+    v.currentTime = Math.min(T, Math.max(0, (px - X0) / (X1 - X0) * T));
+  });
+});
+</script>
+</body>
+</html>

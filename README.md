@@ -1,23 +1,69 @@
-# Showreel 2026: Remotion source
+# Showreel 2026, edited by the music
 
-The source code of my 2026 showreel. It's a 70-second edit written in Remotion (React), where the music data decides the timing. Every cut, type change, zoom and grid step is placed on a musical event read from data files, not keyframed by hand.
+<p align="center"><img src="docs/img/open.gif" width="720" alt="The opening: Bauhaus shapes turn into the name, letters narrowing on each kick"></p>
 
-This repository holds the code and the data files. The media (AI-generated clips, tool screenshots, gameplay recordings and the music) is not included: some of it is private work material and the track is not licensed for publishing. The folder layout the code expects is listed under [Media](#media-not-included).
+<p align="center"><b><a href="https://lalimec.github.io/showreel-code/">▶ Watch the reel with its data running underneath</a></b></p>
 
-## What it renders
+The source code of my 2026 showreel: a 70-second edit written in Remotion (React), where the music decides the timing. Every cut, type change, zoom and grid step sits on a musical event read from data files. Nothing is keyframed by hand.
 
-Two cuts of the same reel, from the same scenes and the same data:
+The repository holds the code and the data. The media isn't included: the AI clips, tool screenshots and gameplay recordings are partly private work material, and the track isn't licensed for publishing. The watch page plays the reel muted for the same reason.
 
-| Composition | Size | Length |
-|---|---|---|
-| `ReelV15` | 1920 × 1080, 30 fps | 70.3 s |
-| `ReelV15V` | 1080 × 1920, 30 fps | 70.3 s |
+<table>
+<tr>
+<td><img src="docs/img/stills/02-trends.jpg" alt="Every trend: a grid of AI trend clips"></td>
+<td><img src="docs/img/stills/03-type.jpg" alt="Every trend: kinetic type"></td>
+<td><img src="docs/img/stills/05-faces.jpg" alt="One template, every face"></td>
+</tr>
+<tr>
+<td><img src="docs/img/stills/06-ratio.jpg" alt="One ad in every ratio"></td>
+<td><img src="docs/img/stills/07-ad-studio.jpg" alt="Ad Studio prototype with a scripted cursor"></td>
+<td><img src="docs/img/stills/10-statics.jpg" alt="Statics in every format"></td>
+</tr>
+<tr>
+<td><img src="docs/img/stills/12-game-ads.jpg" alt="Game ads made from recorded play sessions"></td>
+<td><img src="docs/img/stills/13-creative-studio.jpg" alt="Creative Studio: one template, every variation"></td>
+<td><img src="docs/img/stills/16-games.jpg" alt="Games I build: WordSquare"></td>
+</tr>
+<tr>
+<td><img src="docs/img/stills/17-tools.jpg" alt="Games and tools: CineCast storyboard"></td>
+<td><img src="docs/img/stills/18-card-system.jpg" alt="A card system re-rendered from one text table"></td>
+<td><img src="docs/img/stills/19-finale.jpg" alt="Finale: Make."></td>
+</tr>
+</table>
 
-The reel runs through 20 scenes (`src/ReelV15.jsx`, bottom of the file): an opening where Bauhaus shapes turn into the name, AI trend clips laid out as rows and growing grids, kinetic type on the bell run, ads shown in every ratio, the tools I built (Ad Studio, Ad Cloner, AI Studio and others) with a scripted cursor clicking through them, game ads made from real recorded gameplay, a card wall that re-renders from one text table, a three-number stack, and the end card.
+## Two cuts from the same code
 
-Visual system: light paper ground, big kinetic type in Bricolage Grotesque using its variable width and weight axes, Anton for stacked lines, DM Mono for corner labels, and shape-morph wipes (a circle that grows and leaves as a rotating rounded square) on the section cuts.
+`ReelV15` renders at 1920 × 1080 and `ReelV15V` at 1080 × 1920, both 30 fps and 70.3 s, from the same scenes and the same data.
 
-## What drives the output
+<p>
+<img src="docs/img/stills/12-game-ads.jpg" height="300" alt="Game ads, 16:9">&nbsp;
+<img src="docs/img/stills/v-game-ads.jpg" height="300" alt="Game ads, 9:16">&nbsp;
+<img src="docs/img/stills/v-open.jpg" height="300" alt="Opening, 9:16">
+</p>
+
+The reel runs through 20 scenes (`src/ReelV15.jsx`, bottom of the file):
+- an opening where Bauhaus shapes turn into the name
+- AI trend clips in rows and growing grids, then kinetic type
+- ads shown in every ratio and every feed
+- the tools I built (Ad Studio, Ad Cloner, Creative Studio, AI Studio) with a scripted cursor clicking through them
+- game ads made from real recorded play
+- a card system re-rendered from one text table
+- the finale and the end card
+
+The visual system:
+- a light paper ground
+- big kinetic type in Bricolage Grotesque, using its variable width and weight axes
+- Anton for stacked lines
+- DM Mono for corner labels
+- shape-morph wipes on the section cuts: a circle grows and leaves as a rotating rounded square
+
+## The edit, as data
+
+<img src="docs/img/timeline.png" alt="Timeline of the reel: 20 scenes, music sections, and the kick, snare, hat, melody, bass and tapped hits that drive it">
+
+Everything on this chart is read from the data files: the 20 scenes, the music sections, the two units the edit repeats, and every hit per instrument. The [watch page](https://lalimec.github.io/showreel-code/) runs this chart under the video with a playhead and live pulse meters.
+
+<img src="docs/img/flow.png" alt="Data flow: track, stems, taps, clip ratings and play sessions become cue, event, clip and gameplay data, which ReelV15.jsx reads before Remotion renders both cuts">
 
 ### 1. The music edit and the section map: `src/cues_v7.json`
 
@@ -27,11 +73,11 @@ Written by `analysis/music_v7.py`.
 - **Section times** on the edited timeline: `drop`, `stutter1`–`stutter4`, `gap`, `bells`, `burst1`–`burst4`, `breakdown`, `riser`, `drop2`, `fast`, `sweep`, `impact`, `total`.
 - **The beat grid**: `beats`, plus the inserted units `insG` / `insD` with their lengths.
 
-Every scene starts and ends on a cue. For example `<Sc a={Q.drop} b={Q.gap}><Trends /></Sc>` runs the trend scene from the drop to the gap. The total length comes from `Q.total`. Change the cue sheet and the whole edit re-times.
+Every scene starts and ends on a cue. For example `<Sc a={Q.drop} b={Q.gap}><Trends /></Sc>` runs the trend scene from the drop to the gap. Change the cue sheet and the whole edit re-times.
 
 ### 2. Per-instrument hits: `src/events_v7.json`
 
-Written by `analysis/stems_events.py`. The track is split into stems (drums, bass, other) with Demucs. The same segment edit is applied to each stem, and onsets are detected per band:
+Written by `analysis/stems_events.py`. The original track is split into stems with Demucs. The same segment edit is applied to each stem, and onsets are detected per band:
 
 | Layer | Source |
 |---|---|
@@ -43,23 +89,47 @@ Written by `analysis/stems_events.py`. The track is split into stems (drums, bas
 
 The scenes read these hits through three small helpers:
 
-- **`decay(E.kick, t)`**: a pulse that jumps to 1 on each hit and falls off exponentially. It drives zoom, scale, the variable font width and the fisheye.
-- **`idx(hits, t)`**: how many hits have passed. It drives steps, such as which background colour, how many grid columns or which word is showing.
-- **`lastHit`**: the most recent hit.
+| Helper | What it returns | What it drives |
+|---|---|---|
+| `decay(E.kick, t)` | a pulse that jumps to 1 on each hit and falls off exponentially | zoom, scale, the variable font width, the fisheye |
+| `idx(hits, t)` | how many hits have passed | steps: which background colour, how many grid tiles, which word is showing |
+| `lastHit` | the most recent hit | |
 
-For example, in the opening the name's letters narrow to 82% width on every kick and spring back to 100%. In the faces scene, cuts follow `E.melody` onsets. The trend grid grows on each stutter hit, from 5 × 1 to 7 × 2, 9 × 3 and 11 × 4 tiles.
+A few places where you can see it:
+- In the opening, the name's letters narrow to 82% width on every kick and spring back to 100%.
+- In the faces scene, the cuts follow `E.melody` onsets.
+- The trend grid grows on each stutter hit, from 5 × 1 to 7 × 2, 9 × 3 and 11 × 4 tiles:
+
+<p align="center"><img src="docs/img/trends.gif" width="640" alt="Trend clips: a row steps down on the falling kicks, then the grid grows on each stutter hit"></p>
 
 ### 3. Hand-tapped accents: `STEPS` in `ReelV15.jsx`
 
-I tapped the moments I wanted the big hits on while listening. The taps are corrected for reaction time and snapped to the nearest detected kick (`snap()`), and they drive the held zoom steps.
+I tapped the moments I wanted the big hits on while listening. The taps are corrected for reaction time and snapped to the nearest detected kick (`snap()`), and they drive the held zoom steps. They're the orange dots on the chart.
 
 ### 4. Curated clips: `src/v12_clips.json`
 
-The AI trend clips come from an archive of 5,816 generated videos. The clips were rated, and only the best takes per concept are listed here, grouped by concept with a role (`var`, …). Scenes pick clips by index (`poolClip(i)`, `CLIPS[id].clips`), so a different curation fills the same grids without touching the scene code.
+The AI trend clips come from an archive of 5,816 generated videos. The clips were rated, and only the best takes per concept are listed here, grouped by concept. Scenes pick clips by index (`poolClip(i)`, `CLIPS[id].clips`), so a different curation fills the same grids without touching the scene code.
 
 ### 5. Recorded gameplay: `src/gp_aos.json`, `gp_ar.json`, `gp_wsv.json`
 
-The game ads use real play sessions recorded in a headless mobile browser with Playwright (`tools/gameplay/lib.mjs`). Every tap and drag is logged with its time, coordinates and a label, and the recording is trimmed and encoded with FFmpeg. In the reel, `GameAd14` plays each recording sped up by a per-game rate (4× for Age of Steam, 3× for Aether Realms, 3.2× for WordSquare Versus). The finger replays every recorded tap and drag at the same rate: it glides to the next recorded point, presses on it and follows drags along their path. On top run the UA overlays: a hook banner, timed format beats (a FAIL flash with a screen shake, TRY AGAIN, +1 CARD, the words scored in WordSquare, a win flash) and an end card that slides up with a PLAY FREE button pulsing on the beat. WordSquare also stores the words that fill the square, so every row and column on screen is a real word.
+<p align="center"><img src="docs/img/gameads.gif" width="640" alt="Three game ads replaying recorded taps under hook, fail, win and end-card overlays"></p>
+
+The game ads use real play sessions of my games, recorded in a headless mobile browser with Playwright (`tools/gameplay/lib.mjs`). Every tap and drag is logged with its time, coordinates and a label, and the recording is trimmed and encoded with FFmpeg.
+
+In the reel, `GameAd14` plays each recording sped up by a per-game rate:
+
+| Game | Rate |
+|---|---|
+| Age of Steam | 4× |
+| Aether Realms | 3× |
+| WordSquare Versus | 3.2× |
+
+The finger replays every recorded tap and drag at the same rate. It glides to the next recorded point, presses on it, and follows drags along their path. On top run the ad overlays:
+- a hook banner
+- timed format beats: a FAIL flash with a screen shake, TRY AGAIN, +1 CARD, the words scored in WordSquare, a win flash
+- an end card that slides up, with a PLAY FREE button pulsing on the beat
+
+WordSquare also stores the words that fill the square, so every row and column on screen is a real word.
 
 ### 6. Layout data: `src/moon_index.json`, `src/bgs_covers.json`
 
@@ -68,11 +138,13 @@ The game ads use real play sessions recorded in a headless mobile browser with P
 
 ### 7. Tables inside the scene code
 
-- **`P`**: the palette.
-- **`RAT`**: the ratios an ad is shown in (9:16, 4:5, 1:1, 16:9).
-- **`ADS`**: which rendered ad and caption appears where.
-- **`TR5` / `POOL` / `VSETS`**: which concepts fill which scene.
-- **`WIPES`**: the cue, colour and origin of each shape-morph wipe.
+| Table | What it holds |
+|---|---|
+| `P` | the palette |
+| `RAT` | the ratios an ad is shown in: 9:16, 4:5, 1:1 and 16:9 |
+| `ADS` | which rendered ad and caption appears where |
+| `TR5` / `POOL` / `VSETS` | which concepts fill which scene |
+| `WIPES` | the cue, colour and origin of each shape-morph wipe |
 
 ## Export to video
 
@@ -89,7 +161,7 @@ The audio and the event data are made before rendering:
 
 ```bash
 python analysis/music_v7.py        # edit the track -> public/audio/music_v7.wav + src/cues_v7.json
-demucs public/audio/music.mp3     # stems of the original track -> music/stems/{drums,bass,other}.wav
+demucs public/audio/music.mp3      # stems of the original track -> music/stems/{drums,bass,other}.wav
 python analysis/stems_events.py v7 # cut the stems with the same segment list, detect hits -> src/events_v7.json
 ```
 
@@ -105,5 +177,7 @@ public/
   i/                          stills, posters, the fisheye displacement map
   assets2/, assets3/          tool screenshots, gameplay recordings, card atlases, covers
 ```
+
+`docs/` holds the watch page (GitHub Pages): a muted 720p render, the cue and event data, and the images above.
 
 Built with Remotion 4, React 18, librosa, Demucs, Playwright and FFmpeg. Code written with Claude Code.

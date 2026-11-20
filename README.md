@@ -7,7 +7,7 @@ or switch that page to <i>Live code, no media</i>: the same React code from this
 
 The source code of my 2026 showreel: a 70-second edit written in Remotion (React), where the music decides the timing. Every cut, type change, zoom and grid step sits on a musical event read from data files. Nothing is keyframed by hand.
 
-The repository holds the code and the data. The media isn't included: the AI clips, tool screenshots and gameplay recordings are partly private work material, and the track isn't licensed for publishing. The watch page plays the reel muted for the same reason.
+The repository holds the code and the data. The media isn't included: the AI clips, tool screenshots and gameplay recordings are partly private work material. The watch page plays the rendered reel with its music, next to the same code running live.
 
 The repository still renders as it is. Without the media, every slot is drawn as a labelled placeholder, and everything around the slots comes from the same data. See [Run it yourself](#run-it-yourself).
 
@@ -220,6 +220,6 @@ public/
 
 Included: `public/fonts/brico-latin.woff2` (Bricolage Grotesque, SIL Open Font License, see `public/fonts/OFL.txt`) and the generated drum track. The Moonrakers scene uses Blender Pro, which isn't included; it falls back to Bricolage.
 
-`docs/` holds the watch page (GitHub Pages): a muted 720p render with media, the live player bundle, the cue and event data, the placeholder font and the generated soundtrack under `docs/assets/`, and the images above. The page has one clock (the soundtrack): the video and the live player follow it, so you can switch between them, or drag a compare line across both, without a jump.
+`docs/` holds the watch page (GitHub Pages): a 720p render with media, the live player bundle, the cue and event data, the music, the placeholder font and the generated track under `docs/assets/`, and the images above. The page has one clock, the music: the video and the live player both follow it, so you can switch between them, or move the compare line across both, without a jump.
 
 Built with Remotion 4, React 18, librosa, Demucs, Playwright and FFmpeg. Code written with Claude Code.

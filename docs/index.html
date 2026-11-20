@@ -23,11 +23,12 @@ video{display:block}
 .screen>video,.screen>.livewrap{position:absolute;inset:0;width:100%;height:100%}
 .screen>video{object-fit:cover;background:#000}
 .livewrap{background:var(--paper);clip-path:inset(0 0 0 var(--s));transition:clip-path .55s cubic-bezier(.7,0,.2,1)}
-.screen.drag .livewrap,.screen.drag .split{transition:none}
+.screen.drag .livewrap,.screen.drag .split,.screen.follow .livewrap,.screen.follow .split{transition:none}
+.screen.cmp{cursor:ew-resize}
 #live{width:100%;height:100%}
 .split{position:absolute;top:0;bottom:0;left:var(--s);width:0;transition:left .55s cubic-bezier(.7,0,.2,1);z-index:3}
 .split i{position:absolute;top:0;bottom:0;left:-1.5px;width:3px;background:var(--orange)}
-.split button{all:unset;position:absolute;top:50%;left:0;transform:translate(-50%,-50%);width:46px;height:46px;border-radius:50%;background:var(--orange);display:grid;place-items:center;cursor:ew-resize;box-shadow:0 0 0 3px var(--paper)}
+.split button{all:unset;position:absolute;top:84%;left:0;transform:translate(-50%,-50%);width:46px;height:46px;border-radius:50%;background:var(--orange);display:grid;place-items:center;cursor:ew-resize;box-shadow:0 0 0 3px var(--paper)}
 .split button:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
 .split svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 .screen:not(.cmp) .split{opacity:0;pointer-events:none}
@@ -84,12 +85,12 @@ footer a{color:var(--ink)}
   <div class="stage">
     <div>
       <div class="mode" role="group" aria-label="Version">
-        <button id="mReal" class="on" aria-pressed="true">With media</button>
+        <button id="mCmp" class="on" aria-pressed="true">Compare</button>
+        <button id="mReal" aria-pressed="false">With media</button>
         <button id="mPh" aria-pressed="false">Live code, no media</button>
-        <button id="mCmp" aria-pressed="false">Compare: drag the line</button>
         <button id="mV" aria-pressed="false" hidden>9:16 cut</button>
       </div>
-      <div class="screen" id="screen" style="--s:100%">
+      <div class="screen cmp" id="screen" style="--s:50%">
         <video id="v" src="reel.mp4" muted playsinline preload="auto"></video>
         <div class="livewrap" id="livewrap"><div id="live"></div></div>
         <span class="tagL">With media · video</span><span class="tagR">Live code · React</span>
@@ -102,7 +103,7 @@ footer a{color:var(--ink)}
         <input type="range" id="scrub" min="0" max="70.354" step="0.01" value="0" aria-label="Seek">
         <button id="snd" aria-label="Mute"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path id="sndw" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="#EFEAE0" stroke-width="2" stroke-linecap="round"/></svg></button>
       </div>
-      <audio id="a" src="assets/audio/soundtrack.mp3" preload="auto"></audio>
+      <audio id="a" src="assets/audio/music.mp3" preload="auto"></audio>
       <p class="note" id="vnote"></p>
     </div>
     <div class="side">
@@ -118,7 +119,7 @@ footer a{color:var(--ink)}
   <div class="chapters" id="ch"></div>
 
   <h2>Same code, no media</h2>
-  <p class="lede" style="margin-top:0">The repository renders as it is. Every clip, still and screenshot goes through one media component, and without the media folder it draws a labelled slot instead: striped and moving for video, crossed for stills. Everything around the slots, from the timing and layout to the type, the cursor and the overlays, comes from the same data. The soundtrack on this page is generated from the same data: a drum machine for every detected hit, plus the edit's effects, the bell run, stutters, bursts, riser, sweep and final impact, each on its cue. Pick "Live code, no media" above: that isn't a video, it's the reel's React code running in your browser with @remotion/player.</p>
+  <p class="lede" style="margin-top:0">The repository renders as it is. Every clip, still and screenshot goes through one media component, and without the media folder it draws a labelled slot instead: striped and moving for video, crossed for stills. Everything around the slots, from the timing and layout to the type, the cursor and the overlays, comes from the same data. Rendered without the media folder, the repo also swaps the music for a track generated from the same data: a drum machine on every detected hit plus the edit's effects (bell run, stutters, riser, sweep, impact), each on its cue. This page plays the original music. Pick "Live code, no media" above: that isn't a video, it's the reel's React code running in your browser with @remotion/player.</p>
   <img class="cmp" src="img/compare.jpg" alt="The same three frames with media and with placeholders">
 
   <h2>How it's built</h2>
@@ -135,7 +136,7 @@ footer a{color:var(--ink)}
 const LAY = [['kick', 'Kick', '#FF4A1C'], ['snare', 'Snare', '#151413'], ['hat', 'Hat', '#6E675C'], ['melody', 'Melody', '#2B50FF'], ['bass', 'Bass', '#151413']];
 const COLS = ['#FF4A1C', '#2B50FF', '#151413', '#D9D0BF'];
 const v = document.getElementById('v'), svg = document.getElementById('svg');
-// One clock for everything: the soundtrack <audio>. The video and the live React player both follow it,
+// One clock for everything: the music <audio>. The video and the live React player both follow it,
 // so switching versions or dragging the compare line never jumps, restarts or drifts.
 const A = document.getElementById('a'), screen = document.getElementById('screen');
 let split = 1;            // 1 = all video, 0 = all live code, in between = compare
@@ -220,12 +221,12 @@ Promise.all(['data/scenes.json', 'data/events_v7.json'].map((u) => fetch(u).then
   };
   requestAnimationFrame(tick);
   const NOTES = {
-    video: "The rendered reel, with its media. The licensed track can't be published, so the sound is the reel's own data played as a soundtrack: every drum hit, bell, stutter, riser and sweep you hear is a cue the scenes are cut to.",
-    live: 'Not a video: the reel as React code, running live in your browser (@remotion/player), with every media slot drawn as a placeholder. Same clock, same soundtrack.',
-    cmp: 'Drag the orange line: on the left the rendered video, on the right the same frame running as code. Both follow one clock, so they never drift.'};
+    video: 'The rendered reel, with its media, on the original music.',
+    live: 'Not a video: the reel as React code, running live in your browser (@remotion/player), with every media slot drawn as a placeholder. Same clock, same music.',
+    cmp: 'Move across the picture: left of the line is the rendered video, right of it the same frame running as code. Click to play or pause. Both follow the music, so they never drift.'};
   const mV = document.getElementById('mV'), knob = document.getElementById('knob');
-  let vertical = false, mode = 'video';
-  const setSplit = (x) => { split = Math.max(0, Math.min(1, x)); screen.style.setProperty('--s', (split * 100).toFixed(2) + '%'); knob.setAttribute('aria-valuenow', Math.round(split * 100)); sync(true); };
+  let vertical = false, mode = 'cmp';
+  const setSplit = (x) => { const was = split; split = Math.max(0, Math.min(1, x)); screen.style.setProperty('--s', (split * 100).toFixed(2) + '%'); knob.setAttribute('aria-valuenow', Math.round(split * 100)); sync(was === 0 || was === 1 || split === 0 || split === 1); };
   const setMode = (m) => {
     mode = m;
     if (m !== 'live' && vertical) { vertical = false; window.setReelCut && window.setReelCut('wide'); mV.textContent = '9:16 cut'; }
@@ -243,12 +244,17 @@ Promise.all(['data/scenes.json', 'data/events_v7.json'].map((u) => fetch(u).then
   // drag the compare line (anywhere on the picture while comparing), or the arrow keys on the knob
   const fromX = (e) => { const r = screen.getBoundingClientRect(); return (e.clientX - r.left) / r.width; };
   let dragging = false;
+  // mouse: the line follows the pointer, a click plays or pauses. touch: drag the line, tap to play or pause.
+  let downX = 0;
   screen.addEventListener('pointerdown', (e) => {
     if (e.target.closest('.bigplay')) return;
-    if (mode !== 'cmp') { A.paused ? play() : pause(); return; }
-    dragging = true; screen.classList.add('drag'); screen.setPointerCapture(e.pointerId); setSplit(fromX(e));
+    downX = e.clientX;
+    if (mode === 'cmp' && e.pointerType !== 'mouse') { dragging = true; screen.classList.add('drag'); screen.setPointerCapture(e.pointerId); }
   });
-  screen.addEventListener('pointermove', (e) => { if (dragging) setSplit(fromX(e)); });
+  screen.addEventListener('click', (e) => { if (e.target.closest('.bigplay')) return; if (Math.abs(e.clientX - downX) < 6) (A.paused ? play() : pause()); });
+  screen.addEventListener('pointerenter', (e) => { if (mode === 'cmp' && e.pointerType === 'mouse') screen.classList.add('follow'); });
+  screen.addEventListener('pointerleave', () => screen.classList.remove('follow'));
+  screen.addEventListener('pointermove', (e) => { if (mode !== 'cmp') return; if (dragging || e.pointerType === 'mouse') { screen.classList.add('follow'); setSplit(fromX(e)); } });
   const end = () => { dragging = false; screen.classList.remove('drag'); };
   screen.addEventListener('pointerup', end); screen.addEventListener('pointercancel', end);
   knob.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); screen.classList.add('drag'); setSplit(split + (e.key === 'ArrowRight' ? .05 : -.05)); setTimeout(() => screen.classList.remove('drag'), 50); } });
@@ -267,7 +273,7 @@ Promise.all(['data/scenes.json', 'data/events_v7.json'].map((u) => fetch(u).then
   document.addEventListener('keydown', (e) => { if (e.code === 'Space' && !/INPUT|BUTTON/.test(document.activeElement.tagName)) { e.preventDefault(); A.paused ? play() : pause(); } });
   const loop = () => { if (!A.paused) sync(false); scrub.value = A.currentTime; time.textContent = fmt(A.currentTime) + ' / ' + fmt(70.35); requestAnimationFrame(loop); };
   requestAnimationFrame(loop);
-  setMode('video');
+  setMode('cmp');
   document.getElementById('tl').addEventListener('click', (e) => {
     const r = svg.getBoundingClientRect(), px = (e.clientX - r.left) * 1600 / r.width;
     seek(Math.min(T, Math.max(0, (px - X0) / (X1 - X0) * T)));

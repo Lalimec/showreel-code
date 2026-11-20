@@ -204,5 +204,5 @@ st = mix.astype(np.float32)
 sf.write('public/audio/events_drums.wav', st, SR, subtype='PCM_16')
 shutil.copy('public/audio/events_drums.wav', 'docs/assets/audio/events_drums.wav')
 import subprocess
-subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', 'public/audio/events_drums.wav', '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', 'docs/assets/audio/soundtrack.m4a'], check=True)
+subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', 'public/audio/events_drums.wav', '-c:a', 'libmp3lame', '-b:a', '192k', 'docs/assets/audio/soundtrack.mp3'], check=True)
 print({k: len(v) for k, v in E.items()}, f"{TOTAL:.2f} s -> public/audio/events_drums.wav (+ docs copy)")

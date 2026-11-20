@@ -7,7 +7,9 @@
 import React from 'react';
 import {OffthreadVideo, Img, Audio, staticFile, getInputProps, useCurrentFrame} from 'remotion';
 
-export const PH = getInputProps().placeholder !== false;
+// getInputProps() is only available while rendering; in a <Player> on a web page it throws, so read it safely.
+const readProps = () => { try { return typeof window === 'undefined' ? {} : getInputProps(); } catch (e) { return {}; } };
+export const PH = readProps().placeholder !== false;
 
 const TONES = [['#FF4A1C', '#FFF'], ['#2B50FF', '#FFF'], ['#151413', '#EFEAE0'], ['#D9D0BF', '#151413'], ['#B9B0A0', '#151413'], ['#6E675C', '#EFEAE0']];
 const tone = (s) => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return TONES[h % TONES.length]; };

@@ -2,7 +2,8 @@
 
 <p align="center"><img src="docs/img/open.gif" width="720" alt="The opening: Bauhaus shapes turn into the name, letters narrowing on each kick"></p>
 
-<p align="center"><b><a href="https://lalimec.github.io/showreel-code/">▶ Watch the reel with its data running underneath</a></b></p>
+<p align="center"><b><a href="https://lalimec.github.io/showreel-code/">▶ Watch the reel with its data running underneath</a></b><br>
+or switch that page to <i>Live code, no media</i>: the same React code from this repo, playing in your browser.</p>
 
 The source code of my 2026 showreel: a 70-second edit written in Remotion (React), where the music decides the timing. Every cut, type change, zoom and grid step sits on a musical event read from data files. Nothing is keyframed by hand.
 
@@ -158,7 +159,25 @@ Every clip, still, screenshot, atlas and the soundtrack go through one module, `
 - **Labels:** each block is labelled with the file it stands for and coloured by its name, so the same clip always gets the same colour.
 - **Soundtrack:** `public/audio/events_drums.wav`, a drum machine played from `events_v7.json` by `analysis/drums_from_events.py`. Every kick, snare and hat you hear is a hit the scenes react to.
 
-Timing, layout, type, the cursor and every overlay are untouched. Clone it and it renders:
+Timing, layout, type, the cursor and every overlay are untouched. Here are the same moments with media and from this repo as it is:
+
+<table>
+<tr><th>With media</th><th>This repo, no media</th></tr>
+<tr><td><img src="docs/img/trends.gif" alt="Trend grid with clips"></td><td><img src="docs/img/trends_ph.gif" alt="Trend grid with placeholder slots"></td></tr>
+<tr><td><img src="docs/img/gameads.gif" alt="Game ads with recorded play"></td><td><img src="docs/img/gameads_ph.gif" alt="Game ads with placeholder video slots; the finger and overlays still replay the recorded taps"></td></tr>
+</table>
+
+### In the browser
+
+The watch page's *Live code, no media* mode isn't a video. It runs the compositions themselves with [`@remotion/player`](https://www.remotion.dev/docs/player). `web/player.jsx` mounts `ReelV15` or `ReelV15V` in a `<Player>`, and esbuild bundles it into `docs/live/player.js`. The page reads the player's current frame to drive the same timeline and pulse meters it uses for the video.
+
+```bash
+npm run build:web         # web/player.jsx -> docs/live/player.js
+```
+
+### Rendering
+
+Clone it and it renders:
 
 ```bash
 npm install
@@ -201,6 +220,6 @@ public/
 
 Included: `public/fonts/brico-latin.woff2` (Bricolage Grotesque, SIL Open Font License, see `public/fonts/OFL.txt`) and the generated drum track. The Moonrakers scene uses Blender Pro, which isn't included; it falls back to Bricolage.
 
-`docs/` holds the watch page (GitHub Pages): a muted 720p render with media, a 720p render of this repo as is, the cue and event data, and the images above.
+`docs/` holds the watch page (GitHub Pages): a muted 720p render with media, the live player bundle, the cue and event data, the placeholder font and drum track under `docs/assets/`, and the images above.
 
 Built with Remotion 4, React 18, librosa, Demucs, Playwright and FFmpeg. Code written with Claude Code.

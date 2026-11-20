@@ -18,7 +18,32 @@ h1 em{font-style:normal;color:var(--orange)}
 .lede{max-width:62ch;margin:18px 0 26px;font-size:15px}
 .lede a{color:var(--ink)}
 .stage{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;align-items:start}
-video{width:100%;display:block;background:#000;aspect-ratio:16/9}
+video{display:block}
+.screen{position:relative;width:100%;aspect-ratio:16/9;background:var(--ink);overflow:hidden;user-select:none;touch-action:pan-y}
+.screen>video,.screen>.livewrap{position:absolute;inset:0;width:100%;height:100%}
+.screen>video{object-fit:cover;background:#000}
+.livewrap{background:var(--paper);clip-path:inset(0 0 0 var(--s));transition:clip-path .55s cubic-bezier(.7,0,.2,1)}
+.screen.drag .livewrap,.screen.drag .split{transition:none}
+#live{width:100%;height:100%}
+.split{position:absolute;top:0;bottom:0;left:var(--s);width:0;transition:left .55s cubic-bezier(.7,0,.2,1);z-index:3}
+.split i{position:absolute;top:0;bottom:0;left:-1.5px;width:3px;background:var(--orange)}
+.split button{all:unset;position:absolute;top:50%;left:0;transform:translate(-50%,-50%);width:46px;height:46px;border-radius:50%;background:var(--orange);display:grid;place-items:center;cursor:ew-resize;box-shadow:0 0 0 3px var(--paper)}
+.split button:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+.split svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.screen:not(.cmp) .split{opacity:0;pointer-events:none}
+.tagL,.tagR{position:absolute;top:12px;z-index:2;font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:5px 9px;background:rgba(21,20,19,.85);color:var(--paper);transition:opacity .3s}
+.tagL{left:12px}.tagR{right:12px;background:var(--orange);color:#fff}
+.screen:not(.cmp) .tagL,.screen:not(.cmp) .tagR{opacity:0}
+.bigplay{all:unset;position:absolute;inset:0;margin:auto;width:92px;height:92px;border-radius:50%;background:var(--orange);display:grid;place-items:center;cursor:pointer;z-index:4;transition:transform .2s,opacity .2s}
+.bigplay svg{width:32px;height:32px;margin-left:5px;fill:var(--ink)}
+.bigplay:hover{transform:scale(1.06)}
+.screen.playing .bigplay{opacity:0;pointer-events:none}
+.ctrl{display:grid;grid-template-columns:auto auto 1fr auto;gap:14px;align-items:center;background:var(--ink);color:var(--paper);padding:10px 14px}
+.ctrl button{all:unset;cursor:pointer;width:34px;height:34px;display:grid;place-items:center}
+.ctrl button:focus-visible{outline:2px solid var(--orange)}
+.ctrl svg{width:20px;height:20px;fill:var(--paper)}
+.ctrl .time{font-size:13px;font-variant-numeric:tabular-nums;color:#B9B0A0;min-width:118px}
+.ctrl input[type=range]{width:100%;accent-color:var(--orange);cursor:pointer}
 .note{font-size:12px;color:var(--mute);margin-top:8px}
 .side{display:flex;flex-direction:column;gap:14px}
 .now{background:var(--ink);color:var(--paper);padding:16px 18px}
@@ -61,11 +86,24 @@ footer a{color:var(--ink)}
       <div class="mode" role="group" aria-label="Version">
         <button id="mReal" class="on" aria-pressed="true">With media</button>
         <button id="mPh" aria-pressed="false">Live code, no media</button>
+        <button id="mCmp" aria-pressed="false">Compare: drag the line</button>
         <button id="mV" aria-pressed="false" hidden>9:16 cut</button>
       </div>
-      <video id="v" src="reel.mp4" controls playsinline preload="metadata"></video>
-      <div id="live" hidden></div>
-      <p class="note" id="vnote">Muted on purpose: the track isn't licensed for publishing. The cuts still follow it exactly.</p>
+      <div class="screen" id="screen" style="--s:100%">
+        <video id="v" src="reel.mp4" muted playsinline preload="auto"></video>
+        <div class="livewrap" id="livewrap"><div id="live"></div></div>
+        <span class="tagL">With media · video</span><span class="tagR">Live code · React</span>
+        <div class="split" id="split"><i></i><button id="knob" role="slider" aria-label="Compare: media on the left, live code on the right" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><svg viewBox="0 0 24 24"><path d="M9 6l-6 6 6 6M15 6l6 6-6 6"/></svg></button></div>
+        <button class="bigplay" id="bigplay" aria-label="Play"><svg viewBox="0 0 24 24"><path d="M6 3.5v17l14-8.5z"/></svg></button>
+      </div>
+      <div class="ctrl">
+        <button id="pp" aria-label="Play"><svg viewBox="0 0 24 24" id="ppi"><path d="M6 3.5v17l14-8.5z"/></svg></button>
+        <span class="time" id="time">00:00.0 / 01:10.4</span>
+        <input type="range" id="scrub" min="0" max="70.354" step="0.01" value="0" aria-label="Seek">
+        <button id="snd" aria-label="Mute"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path id="sndw" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="#EFEAE0" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </div>
+      <audio id="a" src="assets/audio/soundtrack.m4a" preload="auto"></audio>
+      <p class="note" id="vnote"></p>
     </div>
     <div class="side">
       <div class="now"><small id="sn">Scene 01 / 20</small><b id="sname">Cemil</b><span id="ssec">before the drop</span></div>
@@ -80,7 +118,7 @@ footer a{color:var(--ink)}
   <div class="chapters" id="ch"></div>
 
   <h2>Same code, no media</h2>
-  <p class="lede" style="margin-top:0">The repository renders as it is. Every clip, still and screenshot goes through one media component, and without the media folder it draws a labelled slot instead: striped and moving for video, crossed for stills. Everything around the slots, from the timing and layout to the type, the cursor and the overlays, comes from the same data. The soundtrack in that version is the event data played back as a drum machine. Pick "Live code, no media" above: that isn't a video, it's the reel's React code running in your browser with @remotion/player.</p>
+  <p class="lede" style="margin-top:0">The repository renders as it is. Every clip, still and screenshot goes through one media component, and without the media folder it draws a labelled slot instead: striped and moving for video, crossed for stills. Everything around the slots, from the timing and layout to the type, the cursor and the overlays, comes from the same data. The soundtrack on this page is generated from the same data: a drum machine for every detected hit, plus the edit's effects, the bell run, stutters, bursts, riser, sweep and final impact, each on its cue. Pick "Live code, no media" above: that isn't a video, it's the reel's React code running in your browser with @remotion/player.</p>
   <img class="cmp" src="img/compare.jpg" alt="The same three frames with media and with placeholders">
 
   <h2>How it's built</h2>
@@ -97,10 +135,27 @@ footer a{color:var(--ink)}
 const LAY = [['kick', 'Kick', '#FF4A1C'], ['snare', 'Snare', '#151413'], ['hat', 'Hat', '#6E675C'], ['melody', 'Melody', '#2B50FF'], ['bass', 'Bass', '#151413']];
 const COLS = ['#FF4A1C', '#2B50FF', '#151413', '#D9D0BF'];
 const v = document.getElementById('v'), svg = document.getElementById('svg');
-let live = false;
-const now = () => (live && window.reelPlayer ? window.reelPlayer.getCurrentFrame() / 30 : v.currentTime);
-const seek = (t) => { if (live && window.reelPlayer) window.reelPlayer.seekTo(Math.round(t * 30)); else v.currentTime = t; };
-const play = () => { if (live && window.reelPlayer) window.reelPlayer.play(); else v.play(); };
+// One clock for everything: the soundtrack <audio>. The video and the live React player both follow it,
+// so switching versions or dragging the compare line never jumps, restarts or drifts.
+const A = document.getElementById('a'), screen = document.getElementById('screen');
+let split = 1;            // 1 = all video, 0 = all live code, in between = compare
+const now = () => A.currentTime;
+const play = () => { A.play().catch(() => {}); };
+const pause = () => A.pause();
+let lastFrame = -1;
+function sync(force) {
+  const t = A.currentTime, playing = !A.paused;
+  if (split > 0) {                                        // the video is visible
+    if (force || Math.abs(v.currentTime - t) > 0.12) v.currentTime = t;
+    if (playing && v.paused) v.play().catch(() => {});
+    if (!playing && !v.paused) v.pause();
+  } else if (!v.paused) v.pause();
+  if (split < 1 && window.reelPlayer) {                   // the live code is visible
+    const f = Math.min(Math.round(t * 30), 2110);
+    if (force || f !== lastFrame) { window.reelPlayer.seekTo(f); lastFrame = f; }
+  }
+}
+const seek = (t) => { A.currentTime = Math.max(0, Math.min(t, 70.35)); sync(true); };
 const X0 = 110, X1 = 1580, NS = 'http://www.w3.org/2000/svg';
 const el = (n, a, p = svg) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); p.appendChild(e); return e; };
 Promise.all(['data/scenes.json', 'data/events_v7.json'].map((u) => fetch(u).then((r) => r.json()))).then(([S, E]) => {
@@ -165,22 +220,54 @@ Promise.all(['data/scenes.json', 'data/events_v7.json'].map((u) => fetch(u).then
   };
   requestAnimationFrame(tick);
   const NOTES = {
-    video: "Muted on purpose: the track isn't licensed for publishing. The cuts still follow it exactly.",
-    live: 'Not a video: the reel as React code, running live in your browser (@remotion/player), with every media slot drawn as a placeholder. The sound is the event data played back as drums, so every kick, snare and hat you hear is a hit the scenes react to.'};
-  const LIVE = document.getElementById('live'), mV = document.getElementById('mV');
-  let vertical = false;
+    video: "The rendered reel, with its media. The licensed track can't be published, so the sound is the reel's own data played as a soundtrack: every drum hit, bell, stutter, riser and sweep you hear is a cue the scenes are cut to.",
+    live: 'Not a video: the reel as React code, running live in your browser (@remotion/player), with every media slot drawn as a placeholder. Same clock, same soundtrack.',
+    cmp: 'Drag the orange line: on the left the rendered video, on the right the same frame running as code. Both follow one clock, so they never drift.'};
+  const mV = document.getElementById('mV'), knob = document.getElementById('knob');
+  let vertical = false, mode = 'video';
+  const setSplit = (x) => { split = Math.max(0, Math.min(1, x)); screen.style.setProperty('--s', (split * 100).toFixed(2) + '%'); knob.setAttribute('aria-valuenow', Math.round(split * 100)); sync(true); };
   const setMode = (m) => {
-    const t = now();
-    live = m === 'live';
-    v.hidden = live; LIVE.hidden = !live; mV.hidden = !live;
-    if (live) { v.pause(); const go = () => { seek(t); }; window.reelPlayer ? go() : window.addEventListener('reelplayer', go, {once: true}); }
-    else { if (window.reelPlayer) window.reelPlayer.pause(); seek(t); }
+    mode = m;
+    if (m !== 'live' && vertical) { vertical = false; window.setReelCut && window.setReelCut('wide'); mV.textContent = '9:16 cut'; }
+    mV.hidden = m !== 'live';
+    screen.classList.toggle('cmp', m === 'cmp');
+    setSplit(m === 'video' ? 1 : m === 'live' ? 0 : 0.5);
     document.getElementById('vnote').textContent = NOTES[m];
-    [['mReal', 'video'], ['mPh', 'live']].forEach(([id, k]) => { const b = document.getElementById(id); b.classList.toggle('on', k === m); b.setAttribute('aria-pressed', k === m); });
+    [['mReal', 'video'], ['mPh', 'live'], ['mCmp', 'cmp']].forEach(([id, k]) => { const b = document.getElementById(id); b.classList.toggle('on', k === m); b.setAttribute('aria-pressed', k === m); });
   };
   document.getElementById('mReal').onclick = () => setMode('video');
   document.getElementById('mPh').onclick = () => setMode('live');
+  document.getElementById('mCmp').onclick = () => setMode('cmp');
   mV.onclick = () => { vertical = !vertical; window.setReelCut && window.setReelCut(vertical ? 'vertical' : 'wide'); mV.textContent = vertical ? '16:9 cut' : '9:16 cut'; };
+  window.addEventListener('reelplayer', () => { lastFrame = -1; sync(true); });
+  // drag the compare line (anywhere on the picture while comparing), or the arrow keys on the knob
+  const fromX = (e) => { const r = screen.getBoundingClientRect(); return (e.clientX - r.left) / r.width; };
+  let dragging = false;
+  screen.addEventListener('pointerdown', (e) => {
+    if (e.target.closest('.bigplay')) return;
+    if (mode !== 'cmp') { A.paused ? play() : pause(); return; }
+    dragging = true; screen.classList.add('drag'); screen.setPointerCapture(e.pointerId); setSplit(fromX(e));
+  });
+  screen.addEventListener('pointermove', (e) => { if (dragging) setSplit(fromX(e)); });
+  const end = () => { dragging = false; screen.classList.remove('drag'); };
+  screen.addEventListener('pointerup', end); screen.addEventListener('pointercancel', end);
+  knob.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); screen.classList.add('drag'); setSplit(split + (e.key === 'ArrowRight' ? .05 : -.05)); setTimeout(() => screen.classList.remove('drag'), 50); } });
+  // transport
+  const pp = document.getElementById('pp'), ppi = document.getElementById('ppi'), scrub = document.getElementById('scrub'), time = document.getElementById('time');
+  const fmt = (t) => { const m = Math.floor(t / 60), s2 = t - m * 60; return String(m).padStart(2, '0') + ':' + s2.toFixed(1).padStart(4, '0'); };
+  const ui = () => { const on = !A.paused; screen.classList.toggle('playing', on); pp.setAttribute('aria-label', on ? 'Pause' : 'Play'); ppi.innerHTML = on ? '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>' : '<path d="M6 3.5v17l14-8.5z"/>'; };
+  A.addEventListener('play', () => { ui(); sync(true); }); A.addEventListener('pause', () => { ui(); sync(true); });
+  A.addEventListener('ended', ui);
+  A.addEventListener('seeking', () => sync(true));
+  pp.onclick = () => (A.paused ? play() : pause());
+  document.getElementById('bigplay').onclick = play;
+  scrub.addEventListener('input', () => seek(+scrub.value));
+  const snd = document.getElementById('snd');
+  snd.onclick = () => { A.muted = !A.muted; snd.setAttribute('aria-label', A.muted ? 'Unmute' : 'Mute'); document.getElementById('sndw').style.display = A.muted ? 'none' : ''; };
+  document.addEventListener('keydown', (e) => { if (e.code === 'Space' && !/INPUT|BUTTON/.test(document.activeElement.tagName)) { e.preventDefault(); A.paused ? play() : pause(); } });
+  const loop = () => { if (!A.paused) sync(false); scrub.value = A.currentTime; time.textContent = fmt(A.currentTime) + ' / ' + fmt(70.35); requestAnimationFrame(loop); };
+  requestAnimationFrame(loop);
+  setMode('video');
   document.getElementById('tl').addEventListener('click', (e) => {
     const r = svg.getBoundingClientRect(), px = (e.clientX - r.left) * 1600 / r.width;
     seek(Math.min(T, Math.max(0, (px - X0) / (X1 - X0) * T)));

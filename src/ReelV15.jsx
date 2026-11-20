@@ -6,6 +6,7 @@ import {AbsoluteFill, Audio, OffthreadVideo, Img, Sequence, Loop, staticFile, us
 import {loadFont as loadInter} from '@remotion/google-fonts/Inter';
 import {loadFont as loadAnton} from '@remotion/google-fonts/Anton';
 import {loadFont as loadMono} from '@remotion/google-fonts/DMMono';
+import {PH, PhVideo, PhImg, PhAudio, asset} from './media';
 import Q from './cues_v7.json';
 import E from './events_v7.json';
 import CLIPS from './v12_clips.json';
@@ -30,10 +31,10 @@ const decay = (hits, abs, k = 9) => { const l = lastHit(hits, abs); return l < -
 const idx = (hits, abs) => hits.filter((h) => h <= abs + 1e-4).length - 1;
 const D = (n, B = false) => (B ? Q.B_OFF : 0) + 6.66 + n * 1.92;      // phrase downbeats
 const Clip = ({name, from = 0.3, style, loop}) => {
-  const v = <OffthreadVideo muted src={staticFile(`v/${name}.mp4`)} startFrom={f(from)} style={{width: '100%', height: '100%', objectFit: 'cover', display: 'block', ...style}} />;
+  const v = <PhVideo muted src={`v/${name}.mp4`} startFrom={f(from)} style={{width: '100%', height: '100%', objectFit: 'cover', display: 'block', ...style}} />;
   return loop ? <Loop durationInFrames={f(loop)}>{v}</Loop> : v;
 };
-const Still = ({src, style}) => <Img src={staticFile(`i/${src}`)} style={{width: '100%', height: '100%', objectFit: 'cover', display: 'block', ...style}} />;
+const Still = ({src, style}) => <PhImg src={`i/${src}`} style={{width: '100%', height: '100%', objectFit: 'cover', display: 'block', ...style}} />;
 // content that swaps at each time in `times` (absolute); render(i) gets the item index
 const Swap = ({at, times, end, render}) => <>{times.map((t0, i) => {
   const t1 = i + 1 < times.length ? times[i + 1] : end;
@@ -166,14 +167,14 @@ const fontHandle = typeof window !== 'undefined' ? delayRender('bricolage') : nu
 if (typeof window !== 'undefined') {
   const faces = [new FontFace('Brico', `url(${staticFile('fonts/brico-latin.woff2')}) format('woff2')`, {weight: '200 800', stretch: '75% 100%'}),
     ...[['Heavy', 900], ['Bold', 700], ['Medium', 500], ['Book', 400]].map(([n, w]) => new FontFace('Blender', `url(${staticFile(`fonts/BlenderPro-${n}.woff2`)}) format('woff2')`, {weight: String(w)}))];
-  Promise.all(faces.map((ff) => ff.load().then((x) => document.fonts.add(x)))).then(() => continueRender(fontHandle)).catch(() => continueRender(fontHandle));
+  Promise.allSettled(faces.map((ff) => ff.load().then((x) => document.fonts.add(x)))).then(() => continueRender(fontHandle));
 }
 const BR = (size, color = P.ink, wght = 800, wdth = 100) => ({fontFamily: 'Brico', fontSize: size, fontWeight: wght, fontStretch: `${wdth}%`, lineHeight: 0.9, letterSpacing: '-0.035em', color, whiteSpace: 'nowrap',
   fontVariationSettings: `"wdth" ${wdth}, "wght" ${wght}, "opsz" 96`});
 const MONO = (size, color = P.mute) => ({fontFamily: DMMONO, fontSize: size, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color, whiteSpace: 'nowrap'});
 const V = (name) => `v12/${name}`;
-const Vid = ({name, from = 0, style}) => <OffthreadVideo muted src={staticFile(`${name}.mp4`)} startFrom={f(from)} style={{width: '100%', height: '100%', objectFit: 'cover', display: 'block', ...style}} />;
-const Pic = ({src, style}) => <Img src={staticFile(src)} style={{width: '100%', height: '100%', objectFit: 'cover', display: 'block', ...style}} />;
+const Vid = ({name, from = 0, style}) => <PhVideo muted src={`${name}.mp4`} startFrom={f(from)} style={{width: '100%', height: '100%', objectFit: 'cover', display: 'block', ...style}} />;
+const Pic = ({src, style}) => <PhImg src={src} style={{width: '100%', height: '100%', objectFit: 'cover', display: 'block', ...style}} />;
 const poster = (clip) => `v12/posters/${clip}.jpg`;
 const pop = (abs, t, d = 0.14, k = 2) => lerp(abs, t, t + d, 0, 1, Easing.out(Easing.back(k)));
 const tc = (abs) => { const s = Math.floor(abs), fr = Math.floor((abs - s) * 30); return `00:${String(s).padStart(2, '0')}:${String(fr).padStart(2, '0')}`; };
@@ -186,7 +187,7 @@ const Hud = ({abs, tl, bl, br, color = P.mute}) => <>
 </>;
 // fisheye: a radial displacement map, scale driven per frame
 const Fish = ({id, scale}) => <svg width="0" height="0" style={{position: 'absolute'}}><filter id={id} x="-10%" y="-10%" width="120%" height="120%">
-  <feImage href={staticFile('i/fishmap.png')} preserveAspectRatio="none" result="m" />
+  <feImage href={asset('i/fishmap.png', true)} preserveAspectRatio="none" result="m" />
   <feDisplacementMap in="SourceGraphic" in2="m" scale={scale} xChannelSelector="R" yChannelSelector="G" /></filter></svg>;
 // shape-morph wipe at a cut: grows from a point before t, then shrinks away as a rounded square after t
 const Wipe = ({abs, t, color = P.orange, x = 960, y = 540, from = 'circle'}) => {
@@ -515,7 +516,7 @@ const GameAd14 = ({a, abs, t0, endAt, beats}) => {
   const shake = a.beats.filter((b) => b.kind === 'fail').reduce((s, b) => s + (u > b.t && u < b.t + 0.25 ? Math.sin((u - b.t) * 90) * 8 * (1 - (u - b.t) / 0.25) : 0), 0);
   return <div style={{width: GA_W + 14, height: GA_H + 14, borderRadius: 44, background: '#000', padding: 7, boxSizing: 'border-box', transform: `translateX(${shake}px)`}}>
     <div style={{position: 'relative', width: GA_W, height: GA_H, borderRadius: 38, overflow: 'hidden', background: '#000'}}>
-      <OffthreadVideo muted src={staticFile(`assets3/gameplay/${a.id}.mp4`)} playbackRate={a.rate} startFrom={f(a.from)} style={{width: '100%', height: '100%', objectFit: 'cover', display: 'block'}} />
+      <PhVideo muted src={`assets3/gameplay/${a.id}.mp4`} playbackRate={a.rate} startFrom={f(a.from)} style={{width: '100%', height: '100%', objectFit: 'cover', display: 'block'}} />
       {/* hook */}
       <div style={{position: 'absolute', left: 14, right: 14, top: 40, padding: '10px 8px', borderRadius: 12, background: a.hookBg, textAlign: 'center', transform: `scale(${0.4 + 0.6 * hookP}) rotate(${-2 * hookP}deg)`, opacity: u < 2.0 ? 1 : 1 - lerp(u, 2.0, 2.15, 0, 1)}}>
         {a.hook.map((l) => <div key={l} style={{fontFamily: SANS, fontWeight: 900, fontSize: 25, lineHeight: 1.05, color: a.hookFg, letterSpacing: '-0.01em'}}>{l}</div>)}</div>
@@ -532,7 +533,7 @@ const GameAd14 = ({a, abs, t0, endAt, beats}) => {
       {u < endAt - t0 && <Hand x={hx} y={hy} press={press} />}
       {/* end card */}
       <div style={{position: 'absolute', inset: 0, background: '#F7F4EE', transform: `translateY(${(1 - end) * 100}%)`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14}}>
-        <div style={{width: 128, height: 128, borderRadius: 30, overflow: 'hidden', background: '#fff'}}><Img src={staticFile(`assets3/gameplay/icon_${a.icon || a.id}.png`)} style={{width: '100%', height: '100%', objectFit: 'cover'}} /></div>
+        <div style={{width: 128, height: 128, borderRadius: 30, overflow: 'hidden', background: '#fff'}}><PhImg src={`assets3/gameplay/icon_${a.icon || a.id}.png`} style={{width: '100%', height: '100%', objectFit: 'cover'}} /></div>
         <div style={{fontFamily: SANS, fontWeight: 800, fontSize: 28, color: C.ink, textAlign: 'center'}}>{a.name}</div>
         <div style={{fontFamily: SANS, fontWeight: 500, fontSize: 16, color: '#6E675C', marginTop: -8}}>{a.sub}</div>
         <div style={{fontFamily: SANS, fontWeight: 800, fontSize: 20, color: '#F5A300'}}>★★★★★</div>
@@ -600,7 +601,7 @@ const Archive = () => {
     <div style={{position: 'absolute', left: 110, top: 250, ...BR(300, P.ink, 800, 90), fontVariantNumeric: 'tabular-nums', transform: `scale(${1 + 0.04 * decay(kk, abs, 12)})`, transformOrigin: '0 100%'}}>{count.toLocaleString('en-US')}</div>
     <div style={{position: 'absolute', left: 116, top: 560, ...BR(100, P.orange)}}>AI videos</div>
     <div style={{position: 'absolute', left: 120, top: 680, ...MONO(22, P.ink)}}>in my archive</div>
-    <div style={{position: 'absolute', left: 1040, top: 200, width: 768, height: 448, backgroundImage: `url(${staticFile('i/mosaic.jpg')})`, backgroundSize: '768px 448px',
+    <div style={{position: 'absolute', left: 1040, top: 200, width: 768, height: 448, backgroundImage: `url(${asset('i/mosaic.jpg')})`, backgroundSize: '768px 448px',
       WebkitMaskImage: 'none'}}>
       <svg width="768" height="448" style={{position: 'absolute', inset: 0}}>
         {Array.from({length: N}, (_, i) => abs < rev(i) ? <rect key={i} x={(i % 24) * 32} y={Math.floor(i / 24) * 32} width="32" height="32" fill={P.paper} /> : null)}
@@ -752,8 +753,8 @@ const Wall = () => {
 // the game's own look: navy ground, BlenderPro, its SVG icons and term colours (from the Moonrakers DB glossary)
 const PB = [...PBe[0], ...PBe[1]];                     // the 16 beats of the fast run
 const MR = {navy: '#1b1b33', mute: '#8b89a8', thruster: '#ffcd5c', reactor: '#57caf6', white: '#ffffff'};
-const BP = (size, color = MR.white, w = 500) => ({fontFamily: 'Blender', fontSize: size, fontWeight: w, color, lineHeight: 1.12});
-const MOON_A = (kind, lang) => staticFile(`assets3/moon/atlas_${kind}_${lang}.jpg`);
+const BP = (size, color = MR.white, w = 500) => ({fontFamily: 'Blender, Brico, sans-serif', fontSize: size, fontWeight: w, color, lineHeight: 1.12});
+const MOON_A = (kind, lang) => asset(`assets3/moon/atlas_${kind}_${lang}.jpg`);
 const MoonTile = ({i, w, h, lang, kind = 'tall'}) => {
   const rows = kind === 'tall' ? MOON.tallRows : MOON.sqRows;
   const c = i % MOON.cols, r = Math.floor(i / MOON.cols) % rows;
@@ -772,7 +773,7 @@ const GFlip = ({abs, t, en, tr}) => {
 // Naka (hero 15), the real Turkish card text with its variables, as the TTC data stores it
 const NAKA_RAW = [['{<style:thruster>}', 'tag'], ['{[[thruster]]}', 'thruster'], [' İtici', 'txt'], ['{</style>}', 'tag'], [' olarak oyna, bu kart dahil olmak üzere zaten oynanan her ', 'txt'],
   ['{<style:thruster>}', 'tag'], ['{[[thruster]]}', 'thruster'], [' İtici', 'txt'], ['{</style>}', 'tag'], [' kartı için ', 'txt'], ['{<style:reactor>}', 'tag'], ['+1 Aksiyon', 'txt'], ['{</style>}', 'tag'], [' kazan.', 'txt']];
-const MIcon = ({name}) => <img src={staticFile(`assets3/moon-tool/icons/${name}.svg`)} style={{height: '1.0em', verticalAlign: '-0.14em', margin: '0 0.12em'}} />;
+const MIcon = ({name}) => <img src={asset(`assets3/moon-tool/icons/${name}.svg`)} style={{height: '1.0em', verticalAlign: '-0.14em', margin: '0 0.12em'}} />;
 // Aether Realms card build: artwork, then frame, icons, text, layer by layer, with the digital version's parallax
 // (pointer -> tilt of the whole card + each layer shifted by its depth: art -6, frame +2, text +3, icons +4/5 px per 245 px of card width)
 const AR_CARDS = ['glade_mimic', 'sylvan_colossus', 'swamp_oracle'], AR_L = ['01_art', '02_frame', '03_icons', '04_text'], AR_DEPTH = [-6, 2, 4.5, 3];
@@ -781,7 +782,7 @@ const ParaCard = ({px, py = 0, w, h, layers, depths, pops = []}) => {
   return <div style={{width: w, height: h, perspective: 900}}>
     <div style={{position: 'relative', width: w, height: h, borderRadius: w * 0.05, overflow: 'hidden', transform: `rotateY(${px * 7}deg) rotateX(${-py * 6}deg)`}}>
       {layers.map((src, i) => <div key={src} style={{position: 'absolute', inset: 0, transform: `translate(${px * depths[i] * k}px, ${py * depths[i] * k * 0.6 - (1 - (pops[i] ?? 1)) * 40}px) scale(${i === 0 ? 1.06 : 1})`, opacity: pops[i] ?? 1}}>
-        <Img src={staticFile(src)} style={{width: '100%', height: '100%', display: 'block'}} /></div>)}
+        <PhImg src={src} style={{width: '100%', height: '100%', display: 'block'}} /></div>)}
       <div style={{position: 'absolute', inset: 0, background: `radial-gradient(circle at ${50 + px * 45}% ${35 + py * 40}%, rgba(255,255,255,.22), rgba(255,255,255,0) 55%)`, mixBlendMode: 'screen'}} />
     </div></div>;
 };
@@ -978,7 +979,7 @@ const WIPES = [[Q.drop, P.orange, 'circle', 576, 560], [Q.gap, P.blue], [BELL_EN
 const Wipes = () => { const abs = useCurrentFrame() / FPS; return <>{WIPES.map(([t, c, s, x, y]) => <Wipe key={t} abs={abs} t={t} color={c} x={x} y={y} />)}</>; };
 export const ReelV15 = () => (
   <AbsoluteFill style={{background: P.paper}}>
-    <Audio src={staticFile('audio/music_v7.wav')} />
+    <PhAudio src="audio/music_v7.wav" />
     <Sc a={0} b={Q.drop} k={0.3}><Open /></Sc>
     <Sc a={Q.drop} b={Q.gap}><Trends /></Sc>
     <Sc a={Q.gap} b={Q.bells[0]}><TypeTrend /></Sc>

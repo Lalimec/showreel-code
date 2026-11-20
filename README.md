@@ -8,6 +8,8 @@ The source code of my 2026 showreel: a 70-second edit written in Remotion (React
 
 The repository holds the code and the data. The media isn't included: the AI clips, tool screenshots and gameplay recordings are partly private work material, and the track isn't licensed for publishing. The watch page plays the reel muted for the same reason.
 
+The repository still renders as it is. Without the media, every slot is drawn as a labelled placeholder, and everything around the slots comes from the same data. See [Run it yourself](#run-it-yourself).
+
 <table>
 <tr>
 <td><img src="docs/img/stills/02-trends.jpg" alt="Every trend: a grid of AI trend clips"></td>
@@ -146,16 +148,35 @@ WordSquare also stores the words that fill the square, so every row and column o
 | `TR5` / `POOL` / `VSETS` | which concepts fill which scene |
 | `WIPES` | the cue, colour and origin of each shape-morph wipe |
 
-## Export to video
+## Run it yourself
+
+<img src="docs/img/compare.jpg" alt="The same three frames with media (left) and with placeholders, rendered from this repo as is (right)">
+
+Every clip, still, screenshot, atlas and the soundtrack go through one module, `src/media.jsx`. By default it runs in placeholder mode:
+- **Video slots** are drawn as striped, moving blocks.
+- **Still slots** are drawn as crossed blocks.
+- **Labels:** each block is labelled with the file it stands for and coloured by its name, so the same clip always gets the same colour.
+- **Soundtrack:** `public/audio/events_drums.wav`, a drum machine played from `events_v7.json` by `analysis/drums_from_events.py`. Every kick, snare and hat you hear is a hit the scenes react to.
+
+Timing, layout, type, the cursor and every overlay are untouched. Clone it and it renders:
 
 ```bash
 npm install
-npm run render            # ReelV15  -> out/reel.mp4           (H.264, audio from public/audio/music_v7.wav)
+npm run render            # ReelV15  -> out/reel.mp4           (placeholders + the event drum track)
 npm run render:vertical   # ReelV15V -> out/reel_vertical.mp4
 npm run stills -- 6.28 6.48 12.38   # PNG stills of both cuts at those seconds, for checking cuts at full size
+npm run studio            # Remotion Studio, to scrub the timeline
 ```
 
-`npm run studio` opens Remotion Studio to scrub the timeline.
+## Export with the real media
+
+With the media in `public/` (layout below), turn placeholders off:
+
+```bash
+npx remotion render src/index.js ReelV15 out/reel.mp4 --props='{"placeholder":false}'
+```
+
+This renders H.264 MP4 with the edited track from `public/audio/music_v7.wav`.
 
 The audio and the event data are made before rendering:
 
@@ -178,6 +199,8 @@ public/
   assets2/, assets3/          tool screenshots, gameplay recordings, card atlases, covers
 ```
 
-`docs/` holds the watch page (GitHub Pages): a muted 720p render, the cue and event data, and the images above.
+Included: `public/fonts/brico-latin.woff2` (Bricolage Grotesque, SIL Open Font License, see `public/fonts/OFL.txt`) and the generated drum track. The Moonrakers scene uses Blender Pro, which isn't included; it falls back to Bricolage.
+
+`docs/` holds the watch page (GitHub Pages): a muted 720p render with media, a 720p render of this repo as is, the cue and event data, and the images above.
 
 Built with Remotion 4, React 18, librosa, Demucs, Playwright and FFmpeg. Code written with Claude Code.

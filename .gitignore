@@ -2,6 +2,10 @@ node_modules/
 out/
 stills/
 tmp/
-public/
 music/
 .bundle*/
+public/*
+!public/fonts/
+!public/audio/
+public/audio/*
+!public/audio/events_drums.wav

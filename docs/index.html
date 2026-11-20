@@ -39,6 +39,11 @@ h2{font:800 34px/1 "Bricolage Grotesque",sans-serif;font-stretch:86%;letter-spac
 .how{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:6px}
 .how div{border-top:3px solid var(--ink);padding-top:10px}
 .how b{font:800 20px "Bricolage Grotesque",sans-serif;font-stretch:90%}
+.mode{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.mode button{all:unset;cursor:pointer;padding:8px 14px;background:#fff;font-size:13px}
+.mode button.on{background:var(--ink);color:var(--paper)}
+.mode button:focus-visible{outline:2px solid var(--blue)}
+.cmp{width:100%;display:block;margin-top:6px}
 footer{margin-top:50px;font-size:13px;color:var(--mute)}
 footer a{color:var(--ink)}
 @media (max-width:860px){.stage{grid-template-columns:1fr}}
@@ -51,8 +56,12 @@ footer a{color:var(--ink)}
 
   <div class="stage">
     <div>
+      <div class="mode" role="group" aria-label="Version">
+        <button id="mReal" class="on" aria-pressed="true">With media</button>
+        <button id="mPh" aria-pressed="false">Placeholders, from this repo</button>
+      </div>
       <video id="v" src="reel.mp4" controls playsinline preload="metadata"></video>
-      <p class="note">Muted on purpose: the track isn't licensed for publishing. The cuts still follow it exactly.</p>
+      <p class="note" id="vnote">Muted on purpose: the track isn't licensed for publishing. The cuts still follow it exactly.</p>
     </div>
     <div class="side">
       <div class="now"><small id="sn">Scene 01 / 20</small><b id="sname">Cemil</b><span id="ssec">before the drop</span></div>
@@ -65,6 +74,10 @@ footer a{color:var(--ink)}
 
   <h2>Scenes</h2>
   <div class="chapters" id="ch"></div>
+
+  <h2>Same code, no media</h2>
+  <p class="lede" style="margin-top:0">The repository renders as it is. Every clip, still and screenshot goes through one media component, and without the media folder it draws a labelled slot instead: striped and moving for video, crossed for stills. Everything around the slots, from the timing and layout to the type, the cursor and the overlays, comes from the same data. The soundtrack in that version is the event data played back as a drum machine. Switch the video above to compare.</p>
+  <img class="cmp" src="img/compare.jpg" alt="The same three frames with media and with placeholders">
 
   <h2>How it's built</h2>
   <div class="how">
@@ -143,6 +156,19 @@ Promise.all(['data/scenes.json', 'data/events_v7.json'].map((u) => fetch(u).then
     requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);
+  const NOTES = {
+    'reel.mp4': "Muted on purpose: the track isn't licensed for publishing. The cuts still follow it exactly.",
+    'reel_placeholder.mp4': 'Rendered from this repo with no media. The sound is the event data played back as drums: every kick, snare and hat you hear is a hit the scenes react to.'};
+  const setMode = (src) => {
+    const t = v.currentTime, playing = !v.paused;
+    v.src = src; v.addEventListener('loadedmetadata', () => { v.currentTime = t; if (playing) v.play(); }, {once: true});
+    document.getElementById('vnote').textContent = NOTES[src];
+    [['mReal', 'reel.mp4'], ['mPh', 'reel_placeholder.mp4']].forEach(([id, s]) => {
+      const b = document.getElementById(id); b.classList.toggle('on', s === src); b.setAttribute('aria-pressed', s === src);
+    });
+  };
+  document.getElementById('mReal').onclick = () => setMode('reel.mp4');
+  document.getElementById('mPh').onclick = () => setMode('reel_placeholder.mp4');
   document.getElementById('tl').addEventListener('click', (e) => {
     const r = svg.getBoundingClientRect(), px = (e.clientX - r.left) * 1600 / r.width;
     v.currentTime = Math.min(T, Math.max(0, (px - X0) / (X1 - X0) * T));
